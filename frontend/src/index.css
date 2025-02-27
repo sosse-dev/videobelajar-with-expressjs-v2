@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+* {
+  font-family: "Lato", sans-serif;
+}
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+  }
+}
+
+button {
+  cursor: pointer;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgb(253, 253, 253);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #491c12;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
