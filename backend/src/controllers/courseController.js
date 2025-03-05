@@ -1,11 +1,32 @@
 import pool from "../config/database.js";
 
-export async function getAllCourses() {
+export async function getAllCourses({ filter, sort, search }) {
   try {
-    const [rows] = await pool.query("SELECT * FROM ProdukKelas");
+    let query = "SELECT * FROM ProdukKelas";
+    const params = [];
+
+    // Filter by category
+    if (filter) {
+      query += " WHERE category_id = ?";
+      params.push(filter);
+    }
+
+    // Search by title
+    if (search) {
+      query += filter ? " AND" : " WHERE";
+      query += " title LIKE ?";
+      params.push(`%${search}%`);
+    }
+
+    // Sort by price or title
+    if (sort) {
+      query += ` ORDER BY ${sort}`;
+    }
+
+    const [rows] = await pool.query(query, params);
     return rows;
   } catch (error) {
-    console.log(error);
+    console.error("Error saat mengambil data kursus:", error);
     throw error;
   }
 }

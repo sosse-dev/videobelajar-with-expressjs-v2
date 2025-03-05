@@ -1,0 +1,80 @@
+A. Autentikasi, Filter Kursus dan Upload image
+
+0. cek ENV, karena di perlukan dan path API awalnya pakai /v1/
+1. User mendaftar,
+2. Link verifikasi dikirim ke email yang tadi di daftar,
+3. Karena belum ada logika frontend untuk url yang dikirim, cukup ambil <token> nya saja di gmail: http://domain-frontend/v1/verify-email?token=<token>,
+4. kemudian panggil API nya (GET): http://domain-backend/v1/verify-email?token=<token> (masukan tokennya dan sesuaikan domain),
+5. Setelah berhasil diverifikasi,
+6. login, dan nanti akan dikasih <token_jwt> dari response body,
+7. Copy <token_jwt> dan masukan <token_jwt> itu ke Authorization: Bearer <token_jwt> (untuk mengakses beberapa logic yang dibutuhkan dengan memverifikasi JWT dengan verifyToken di authMiddleware.js)
+8. untuk mengakses course dengan filter, sort, search tinggal masukan search params: http://domain-backend/v1/course?filter=<filter>&sort=<sort>&search=<search>,
+9. Untuk upload image, cek command dibawah dengan memakai curl, nantinya image akan di upload ke folder uploads/.
+
+// CURL (POST), untuk upload image: curl -X POST http://localhost:5000/v1/upload \ -H "Content-Type: multipart/form-data" \ -F "file=@C:/Users/<user>/Pictures/example.jpg"
+// PATH (GET), untuk verify email: /v1/verify-email?token=<token>
+// DATA JSON (POST), untuk register:
+{
+  "name": "Seseorang",
+  "username": "seseorang12",
+  "email": "seseorang@gmail.com",
+  "password": "1234567890",
+  "picture": "/images/profile.jpg",
+  "country_code": "+62",
+  "phone_number": "1234567890"
+}
+
+// DATA JSON (POST), untuk login:
+{
+  "email": "seseorang@gmail.com",
+  "password": "1234567890"
+}
+
+
+B. Kursus
+
+0. Jika anda sudah login, dan GAGAL dengan membuat kursus sesuai data JSON dibawah, kemungkinan besar karena category dan tutor belum dibuat, id nya tidak ditemukan,
+1. Kalau TIDAK ingin memasukan/membuat kategori dan tutor, langsung saja hapus dua hal tersebut dari data JSON dibawah.
+
+// Contoh data JSON untuk menambah kursus (Baca diatas)
+{
+  "title": "Belajar JavaScript Dasar",
+  "description": "Kursus ini membahas dasar-dasar JavaScript untuk pemula dengan materi yang interaktif dan aplikatif.",
+  "basePrice": 150000,
+  "discount": 10.0,
+  "language": "Bahasa Indonesia",
+  "categoryId": 1,
+  "tutorIds": [1, 2],
+  "pretest": {
+    "title": "Pretest JavaScript",
+    "description": "Ujian pendahuluan untuk mengukur pengetahuan dasar sebelum memulai kursus.",
+    "passingScore": 70
+  },
+  "modules": [
+    {
+      "title": "Pengenalan JavaScript",
+      "description": "Materi pengenalan mengenai apa itu JavaScript dan sejarah singkatnya.",
+      "orderIndex": 1
+    },
+    {
+      "title": "Dasar-Dasar Sintaks",
+      "description": "Pembahasan mengenai variabel, tipe data, dan operator dasar dalam JavaScript.",
+      "orderIndex": 2
+    },
+    {
+      "title": "Kontrol Alur Program",
+      "description": "Mempelajari struktur kontrol seperti if, loop, dan switch case.",
+      "orderIndex": 3
+    }
+  ]
+}
+
+// Contoh data JSON untuk mengupdate kursus
+{
+  "title": "Belajar React dari Nol",
+  "description": "Kursus ini akan mengajarkan dasar-dasar React hingga level mahir.",
+  "basePrice": 500000,
+  "discount": 100.00,
+  "language": "Indonesia",
+  "categoryId": 2
+}

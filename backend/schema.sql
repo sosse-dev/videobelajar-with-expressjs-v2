@@ -5,11 +5,23 @@ USE video_belajar;
 CREATE TABLE User (
     user_id INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
+    username VARCHAR(100) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     picture VARCHAR(255),
     country_code VARCHAR(10),
-    phone_number VARCHAR(20)
+    phone_number VARCHAR(20),
+    is_verified BOOLEAN DEFAULT FALSE,
+    verification_token VARCHAR(255)
+);
+
+-- Tabel EmailVerificationTokens
+CREATE TABLE EmailVerificationTokens (
+    token_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    token VARCHAR(255) UNIQUE NOT NULL,
+    expires_at DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES User(user_id)
 );
 
 -- Tabel Kategori Kelas

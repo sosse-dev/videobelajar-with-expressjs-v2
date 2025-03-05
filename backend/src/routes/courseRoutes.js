@@ -6,13 +6,17 @@ import {
   editCourseById,
   deleteCourseById,
 } from "../controllers/courseController.js";
+import upload from "../middleware/multerMiddleware.js";
+import { uploadFile } from "../controllers/uploadController.js";
+import { verifyToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 // GET all courses
-router.get("/v1/course", async (req, res) => {
+router.get("/v1/course", verifyToken, async (req, res) => {
+  const { filter, sort, search } = req.params;
   try {
-    const courses = await getAllCourses();
+    const courses = await getAllCourses({ filter, sort, search });
     res.status(200).json(courses);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch courses.", error });
@@ -20,7 +24,7 @@ router.get("/v1/course", async (req, res) => {
 });
 
 // GET a course by ID
-router.get("/v1/course/:id", async (req, res) => {
+router.get("/v1/course/:id", verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
     const course = await getCourseById(id);
@@ -32,7 +36,7 @@ router.get("/v1/course/:id", async (req, res) => {
 });
 
 // POST a new course
-router.post("/v1/course", async (req, res) => {
+router.post("/v1/course", verifyToken, async (req, res) => {
   try {
     const newCourse = await createOneCourse(req.body);
     res
@@ -44,7 +48,7 @@ router.post("/v1/course", async (req, res) => {
 });
 
 // PUT/PATCH to edit a course by ID
-router.put("/v1/course/:id", async (req, res) => {
+router.put("/v1/course/:id", verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
     const updatedCourse = await editCourseById(id, req.body);
@@ -56,7 +60,7 @@ router.put("/v1/course/:id", async (req, res) => {
   }
 });
 
-router.patch("/v1/course/:id", async (req, res) => {
+router.patch("/v1/course/:id", verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
     const updatedCourse = await editCourseById(id, req.body);
@@ -69,7 +73,7 @@ router.patch("/v1/course/:id", async (req, res) => {
 });
 
 // DELETE a course by ID
-router.delete("/v1/course/:id", async (req, res) => {
+router.delete("/v1/course/:id", verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
     await deleteCourseById(id);
@@ -78,5 +82,7 @@ router.delete("/v1/course/:id", async (req, res) => {
     res.status(500).json({ message: "Failed to delete course.", error });
   }
 });
+
+router.post("/v1/upload", upload.single("file"), uploadFile);
 
 export default router;
